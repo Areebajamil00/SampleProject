@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using SampleProject.Models;
+using WebApplication16.Models;
 
 namespace SampleProject.DataLayer
 {
@@ -17,6 +18,7 @@ namespace SampleProject.DataLayer
             var c = config;
             connectionString = config.GetConnectionString("ProjectDB");
         }
+
         public List<Country> GetCountriesData()
         {
             List<Country> lstCountry = new List<Country>();
@@ -69,6 +71,28 @@ namespace SampleProject.DataLayer
                 con.Close();
             }
             return lstSpecialDay;
+        }
+
+        public bool InsertBook(book book)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                if (book != null)
+                {
+                    SqlCommand cmd = new SqlCommand("insertbook", con);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@bookname", book.bookname);
+                    cmd.Parameters.AddWithValue("@bookid", book.bookid);
+                    cmd.Parameters.AddWithValue("@category", book.category);
+                    cmd.Parameters.AddWithValue("@shelf", book.shelf);
+                    cmd.Parameters.AddWithValue("@avail", book.availibilty);
+                    con.Open();
+                    int i = cmd.ExecuteNonQuery();
+                    con.Close();
+                    return true;
+                }
+                return false;
+            }
         }
     }
 }
